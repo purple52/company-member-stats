@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Company Member Stats
 // @namespace    https://github.com/purple52/company-member-stats
-// @version      0.0.1
+// @version      0.0.2
 // @description  Add a copy button for extracting Spartan company member stats
 // @author       David Edwards
 // @match        https://www.halowaypoint.com/en-us/spartan-companies/*
@@ -96,7 +96,7 @@ function showMsg(text, fade, duration) {
 // Collect members and rank and copy to clipboard
 function copyMembersAndRank() {
     showMsg('Working...');
-    collectMembers([], $('ul.clan-member-list li p.gamertag a').slice(-2)).then(function(members) {
+    collectMembers([], $('ul.clan-member-list li p.gamertag a')).then(function(members) {
         console.log(members);
         var text = buildCopyText(members);
         try {
