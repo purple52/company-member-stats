@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Company Member Stats
 // @namespace    https://github.com/purple52/company-member-stats
-// @version      0.0.2
+// @version      0.0.3
 // @description  Add a copy button for extracting Spartan company member stats
 // @author       David Edwards
 // @match        https://www.halowaypoint.com/en-us/spartan-companies/*
@@ -14,18 +14,28 @@
 
 var Member = function (memberLinkElement, playerDocument) {
     this.gamertag  = $(memberLinkElement).text();
-    this.href  = $(memberLinkElement).attr('href');
+    this.href = $(memberLinkElement).attr('href');
     var rank = document.evaluate('//div[contains(@class,"spartan-rank")]/p/text()', playerDocument, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    this.rank = rank.nodeValue;
+    if (rank !== null) {
+        this.rank = rank.nodeValue;
+    } else {
+        console.log(playerDocument);
+        throw "Could not extract rank from " + h5ServiceRecordUrl(memberLinkElement);
+    }
 };
 
 function memberFrom(memberLinkElement) {
     return new Promise(function(resolve, reject) {
-        get($(memberLinkElement).attr('href')).then(function(response) {
+        get(h5ServiceRecordUrl(memberLinkElement)).then(function(response) {
             var doc = new DOMParser().parseFromString(response.responseText, "text/html");
             resolve(new Member(memberLinkElement, doc));
         });
     });
+}
+
+function h5ServiceRecordUrl(memberLinkElement) {
+    var memberLinkHref = $(memberLinkElement).attr('href');
+    return 'https://www.halowaypoint.com/en-us/games/halo-5-guardians/xbox-one/service-records/players/' + memberLinkHref.substr(memberLinkHref.lastIndexOf('/') + 1);
 }
 
 function get(url) {
